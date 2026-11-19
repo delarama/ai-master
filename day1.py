@@ -1,8 +1,13 @@
+import os
+
 import anthropic
 from dotenv import load_dotenv
 
 load_dotenv()
-client = anthropic.Anthropic()
+# Cloud environments reserve ANTHROPIC_API_KEY, so CLAUDE_API_KEY is accepted too.
+client = anthropic.Anthropic(
+    api_key=os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
+)
 
 msg = client.messages.create(
     model="claude-sonnet-5-5",
