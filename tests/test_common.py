@@ -1,3 +1,4 @@
+import anthropic
 import pytest
 
 import common
@@ -14,3 +15,26 @@ def test_make_client_explains_missing_key(monkeypatch):
     monkeypatch.setattr(common, "load_dotenv", lambda: None)
     with pytest.raises(SystemExit, match="ANTHROPIC_API_KEY is not set"):
         common.make_client()
+
+
+def _api_error(cls):
+    # Bypass the SDK constructors (they need transport objects); only the type matters here.
+    return cls.__new__(cls)
+
+
+@pytest.mark.parametrize(
+    ("error", "message"),
+    [
+        (_api_error(anthropic.AuthenticationError), "Authentication failed"),
+        (_api_error(anthropic.RateLimitError), "Rate limited"),
+        (_api_error(anthropic.APIConnectionError), "Could not reach"),
+    ],
+)
+def test_friendly_api_errors_maps_known_failures(error, message):
+    with pytest.raises(SystemExit, match=message), common.friendly_api_errors():
+        raise error
+
+
+def test_friendly_api_errors_lets_other_errors_through():
+    with pytest.raises(ValueError), common.friendly_api_errors():
+        raise ValueError("not an API error")

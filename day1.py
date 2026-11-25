@@ -6,7 +6,13 @@ persona holding a secret (their lowest price), then prints the reply and usage.
 
 import anthropic
 
-from common import BUYER_OPENING, DEFAULT_MODEL, SELLER_SYSTEM_PROMPT, make_client
+from common import (
+    BUYER_OPENING,
+    DEFAULT_MODEL,
+    SELLER_SYSTEM_PROMPT,
+    friendly_api_errors,
+    make_client,
+)
 
 
 def negotiate(
@@ -22,6 +28,7 @@ def negotiate(
 
 
 if __name__ == "__main__":
-    msg = negotiate(make_client())
-    print(msg.content[0].text)
-    print(msg.usage)
+    with friendly_api_errors():
+        msg = negotiate(make_client())
+        print(msg.content[0].text)
+        print(msg.usage)

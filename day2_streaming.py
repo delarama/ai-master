@@ -8,7 +8,13 @@ from dataclasses import dataclass
 
 import anthropic
 
-from common import BUYER_OPENING, DEFAULT_MODEL, SELLER_SYSTEM_PROMPT, make_client
+from common import (
+    BUYER_OPENING,
+    DEFAULT_MODEL,
+    SELLER_SYSTEM_PROMPT,
+    friendly_api_errors,
+    make_client,
+)
 
 
 @dataclass
@@ -48,4 +54,5 @@ def stream_reply(client: anthropic.Anthropic, user_message: str = BUYER_OPENING)
 
 
 if __name__ == "__main__":
-    stream_reply(make_client())
+    with friendly_api_errors():
+        stream_reply(make_client())

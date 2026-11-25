@@ -9,7 +9,7 @@ See [ROADMAP.md](ROADMAP.md) for the full plan.
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
+cp .env.example .env   # then paste your key into .env
 ```
 
 ## Development

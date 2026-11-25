@@ -1,6 +1,8 @@
 """Shared setup used by the daily scripts."""
 
 import os
+from collections.abc import Iterator
+from contextlib import contextmanager
 
 import anthropic
 from dotenv import load_dotenv
@@ -24,3 +26,19 @@ def make_client() -> anthropic.Anthropic:
     if not os.environ.get("ANTHROPIC_API_KEY"):
         raise SystemExit("ANTHROPIC_API_KEY is not set. Add it to a .env file in the repo root.")
     return anthropic.Anthropic()
+
+
+@contextmanager
+def friendly_api_errors() -> Iterator[None]:
+    """Turn common API failures into one-line messages instead of tracebacks.
+
+    Use around a script's demo code: ``with friendly_api_errors(): ...``
+    """
+    try:
+        yield
+    except anthropic.AuthenticationError as exc:
+        raise SystemExit("Authentication failed: check ANTHROPIC_API_KEY in .env.") from exc
+    except anthropic.RateLimitError as exc:
+        raise SystemExit("Rate limited by the API: wait a moment and try again.") from exc
+    except anthropic.APIConnectionError as exc:
+        raise SystemExit("Could not reach the Anthropic API: check your connection.") from exc
