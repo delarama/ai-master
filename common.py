@@ -1,5 +1,7 @@
 """Shared setup used by the daily scripts."""
 
+import os
+
 import anthropic
 from dotenv import load_dotenv
 
@@ -19,9 +21,6 @@ def make_client() -> anthropic.Anthropic:
     Raises a clear error instead of a cryptic auth failure when the key is missing.
     """
     load_dotenv()
-    try:
-        return anthropic.Anthropic()
-    except anthropic.AnthropicError as exc:
-        raise SystemExit(
-            "ANTHROPIC_API_KEY is not set. Add it to a .env file in the repo root."
-        ) from exc
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        raise SystemExit("ANTHROPIC_API_KEY is not set. Add it to a .env file in the repo root.")
+    return anthropic.Anthropic()
