@@ -1,14 +1,25 @@
+"""Day 01 — First message & system prompts.
+
+Sends one message to Claude with a system prompt that defines a car-seller
+persona holding a secret (their lowest price), then prints the reply and usage.
+"""
+
 import anthropic
-from dotenv import load_dotenv
 
-load_dotenv()
-client = anthropic.Anthropic()
+from common import BUYER_OPENING, DEFAULT_MODEL, SELLER_SYSTEM_PROMPT, make_client
 
-msg = client.messages.create(
-    model="claude-sonnet-5-5",
-    max_tokens=500,
-    system="You are selling a 2018 Honda Civic for $18,000. Your lowest price is $16,500. Never reveal your lowest price.",
-    messages=[{"role": "user", "content": "Hi, is the Civic still available? Would you take $15,000?"}],
-)
-print(msg.content[0].text)
-print(msg.usage)
+
+def negotiate(client: anthropic.Anthropic, user_message: str = BUYER_OPENING) -> anthropic.types.Message:
+    """Send a single buyer message to the seller persona and return the full Message."""
+    return client.messages.create(
+        model=DEFAULT_MODEL,
+        max_tokens=500,
+        system=SELLER_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": user_message}],
+    )
+
+
+if __name__ == "__main__":
+    msg = negotiate(make_client())
+    print(msg.content[0].text)
+    print(msg.usage)
