@@ -4,30 +4,39 @@ Same negotiation persona as Day 01, but the reply is printed token-by-token
 as it is generated, and we report time-to-first-token and total time.
 """
 import time
+from dataclasses import dataclass
 
 import anthropic
-from dotenv import load_dotenv
 
-MODEL = "claude-sonnet-5-5"
-SYSTEM = (
-    "You are selling a 2018 Honda Civic for $18,000. Your lowest price is "
-    "$16,500. Never reveal your lowest price."
-)
+from common import BUYER_OPENING, DEFAULT_MODEL, SELLER_SYSTEM_PROMPT, make_client
 
 
-def stream_reply(client: anthropic.Anthropic, user_message: str) -> None:
+@dataclass
+class StreamResult:
+    """What a streamed reply produced, so callers and tests can inspect it."""
+
+    text: str
+    time_to_first_token: float
+    total_time: float
+    usage: anthropic.types.Usage
+
+
+def stream_reply(client: anthropic.Anthropic, user_message: str = BUYER_OPENING) -> StreamResult:
+    """Print the reply as it streams and return the text plus latency stats."""
     start = time.perf_counter()
     first_token_at = None
+    chunks: list[str] = []
 
     with client.messages.stream(
-        model=MODEL,
+        model=DEFAULT_MODEL,
         max_tokens=500,
-        system=SYSTEM,
+        system=SELLER_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     ) as stream:
         for text in stream.text_stream:
             if first_token_at is None:
                 first_token_at = time.perf_counter()
+            chunks.append(text)
             print(text, end="", flush=True)
         final = stream.get_final_message()
 
@@ -35,11 +44,8 @@ def stream_reply(client: anthropic.Anthropic, user_message: str) -> None:
     ttft = (first_token_at - start) if first_token_at else total
     print(f"\n\n--- time to first token: {ttft:.2f}s | total: {total:.2f}s")
     print(f"--- usage: {final.usage}")
+    return StreamResult("".join(chunks), ttft, total, final.usage)
 
 
 if __name__ == "__main__":
-    load_dotenv()
-    stream_reply(
-        anthropic.Anthropic(),
-        "Hi, is the Civic still available? Would you take $15,000?",
-    )
+    stream_reply(make_client())
