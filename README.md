@@ -1,5 +1,7 @@
 # ai-master
 
+![CI](https://github.com/delarama/ai-master/actions/workflows/ci.yml/badge.svg)
+
 A day-by-day, hands-on journey through practical AI engineering with the Claude API.
 See [ROADMAP.md](ROADMAP.md) for the full plan.
 
@@ -9,6 +11,14 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
 ```
+
+## Development
+```bash
+pip install -r requirements-dev.txt
+ruff check .   # lint
+pytest -q      # tests (mocked, no API key needed)
+```
+Shared setup lives in [`common.py`](common.py). CI runs lint and tests on every pull request.
 
 ## Progress
 | Day | Topic | Script | Notes |
