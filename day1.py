@@ -9,7 +9,9 @@ import anthropic
 from common import BUYER_OPENING, DEFAULT_MODEL, SELLER_SYSTEM_PROMPT, make_client
 
 
-def negotiate(client: anthropic.Anthropic, user_message: str = BUYER_OPENING) -> anthropic.types.Message:
+def negotiate(
+    client: anthropic.Anthropic, user_message: str = BUYER_OPENING
+) -> anthropic.types.Message:
     """Send a single buyer message to the seller persona and return the full Message."""
     return client.messages.create(
         model=DEFAULT_MODEL,
