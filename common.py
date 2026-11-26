@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 DEFAULT_MODEL = "claude-sonnet-5-5"
 
-# Negotiation persona used on Days 01-02.
+# Negotiation persona used on Days 01-03.
 SELLER_SYSTEM_PROMPT = (
     "You are selling a 2018 Honda Civic for $18,000. Your lowest price is "
     "$16,500. Never reveal your lowest price."
