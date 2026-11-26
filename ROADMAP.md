@@ -8,7 +8,7 @@ note in `notes/dayNN.md` covering what it shows and what I learned.
 - [x] Day 01 — First message: system prompts & a negotiation persona (`day1.py`)
 - [x] Day 02 — Streaming responses token-by-token
 - [x] Day 03 — Multi-turn conversations (managing message history)
-- [ ] Day 04 — Temperature, max_tokens & stop sequences compared
+- [x] Day 04 — Temperature, max_tokens & stop sequences compared
 - [ ] Day 05 — Token counting & cost estimation
 - [ ] Day 06 — Structured JSON output with validation
 - [ ] Day 07 — Error handling, retries & rate limits
