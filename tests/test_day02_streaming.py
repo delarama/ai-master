@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-import day2_streaming
+import day02_streaming
 
 
 def _fake_client(chunks, usage="usage"):
@@ -20,7 +20,7 @@ def _fake_client(chunks, usage="usage"):
 def test_stream_reply_joins_chunks_and_reports_usage(capsys):
     client = _fake_client(["Yes, ", "it's ", "available."], usage="u")
 
-    result = day2_streaming.stream_reply(client, "Is it available?")
+    result = day02_streaming.stream_reply(client, "Is it available?")
 
     assert result.text == "Yes, it's available."
     assert result.usage == "u"
@@ -31,6 +31,6 @@ def test_stream_reply_joins_chunks_and_reports_usage(capsys):
 
 
 def test_stream_reply_handles_empty_stream():
-    result = day2_streaming.stream_reply(_fake_client([]), "hi")
+    result = day02_streaming.stream_reply(_fake_client([]), "hi")
     assert result.text == ""
     assert result.time_to_first_token == result.total_time

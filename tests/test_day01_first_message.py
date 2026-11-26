@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-import day1
+import day01_first_message
 from common import BUYER_OPENING, DEFAULT_MODEL, SELLER_SYSTEM_PROMPT
 
 
@@ -8,7 +8,7 @@ def test_negotiate_sends_persona_and_buyer_message():
     client = MagicMock()
     client.messages.create.return_value = "reply"
 
-    assert day1.negotiate(client) == "reply"
+    assert day01_first_message.negotiate(client) == "reply"
 
     kwargs = client.messages.create.call_args.kwargs
     assert kwargs["model"] == DEFAULT_MODEL
@@ -18,7 +18,7 @@ def test_negotiate_sends_persona_and_buyer_message():
 
 def test_negotiate_accepts_custom_message():
     client = MagicMock()
-    day1.negotiate(client, "Final offer: $16,000")
+    day01_first_message.negotiate(client, "Final offer: $16,000")
     assert client.messages.create.call_args.kwargs["messages"][0]["content"] == (
         "Final offer: $16,000"
     )

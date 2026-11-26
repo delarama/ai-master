@@ -68,3 +68,26 @@ def test_chat_loop_stops_on_empty_line(monkeypatch, capsys):
 
     assert "seller> Counter: $17,500" in capsys.readouterr().out
     assert client.messages.create.call_count == 1
+
+
+def test_max_turns_must_be_positive():
+    with pytest.raises(ValueError):
+        Conversation(system="s", max_turns=0)
+
+
+def test_window_with_one_turn_sends_only_pending_message():
+    convo = Conversation(system="s", max_turns=1)
+    convo.add_user("u0")
+    convo.add_assistant("a0")
+    convo.add_user("u1")
+    assert [m["content"] for m in convo.window()] == ["u1"]
+
+
+def test_chat_loop_stops_on_eof(monkeypatch):
+    def raise_eof(_):
+        raise EOFError
+
+    monkeypatch.setattr("builtins.input", raise_eof)
+    client = MagicMock()
+    chat_loop(client, Conversation(system="s"))
+    client.messages.create.assert_not_called()

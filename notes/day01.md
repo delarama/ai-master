@@ -1,6 +1,6 @@
 # Day 01 — First message & system prompts
 
-**Script:** `day1.py`
+**Script:** `day01_first_message.py`
 
 ## What it shows
 - Minimal `client.messages.create` call with a `system` prompt defining a persona.

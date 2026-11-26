@@ -5,7 +5,7 @@ Each day adds one small, working, runnable script (`dayNN_<topic>.py`) plus a sh
 note in `notes/dayNN.md` covering what it shows and what I learned.
 
 ## Track 1 — API fundamentals
-- [x] Day 01 — First message: system prompts & a negotiation persona (`day1.py`)
+- [x] Day 01 — First message: system prompts & a negotiation persona (`day01_first_message.py`)
 - [x] Day 02 — Streaming responses token-by-token
 - [x] Day 03 — Multi-turn conversations (managing message history)
 - [x] Day 04 — Temperature, max_tokens & stop sequences compared

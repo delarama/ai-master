@@ -12,6 +12,7 @@ from common import (
     SELLER_SYSTEM_PROMPT,
     friendly_api_errors,
     make_client,
+    response_text,
 )
 
 
@@ -30,5 +31,5 @@ def negotiate(
 if __name__ == "__main__":
     with friendly_api_errors():
         msg = negotiate(make_client())
-        print(msg.content[0].text)
+        print(response_text(msg))
         print(msg.usage)

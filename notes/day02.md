@@ -1,6 +1,6 @@
 # Day 02 — Streaming
 
-**Script:** `day2_streaming.py`
+**Script:** `day02_streaming.py`
 
 ## What it shows
 - `client.messages.stream(...)` as a context manager yields text deltas via `stream.text_stream`.
