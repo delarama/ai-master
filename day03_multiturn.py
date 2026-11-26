@@ -12,7 +12,13 @@ from dataclasses import dataclass, field
 
 import anthropic
 
-from common import DEFAULT_MODEL, SELLER_SYSTEM_PROMPT, friendly_api_errors, make_client
+from common import (
+    DEFAULT_MODEL,
+    SELLER_SYSTEM_PROMPT,
+    friendly_api_errors,
+    make_client,
+    response_text,
+)
 
 Message = dict[str, str]
 
@@ -55,7 +61,7 @@ def ask(client: anthropic.Anthropic, convo: Conversation, text: str) -> str:
         system=convo.system,
         messages=convo.window(),
     )
-    reply = "".join(block.text for block in response.content if block.type == "text")
+    reply = response_text(response)
     convo.add_assistant(reply)
     return reply
 

@@ -13,7 +13,7 @@ from typing import Any
 
 import anthropic
 
-from common import DEFAULT_MODEL, friendly_api_errors, make_client
+from common import DEFAULT_MODEL, friendly_api_errors, make_client, response_text
 
 PROMPT = (
     "Write a three-line sales pitch for a used 2018 Honda Civic. "
@@ -62,7 +62,7 @@ def run_variant(client: anthropic.Anthropic, variant: Variant, prompt: str = PRO
     response = client.messages.create(
         messages=[{"role": "user", "content": prompt}], **variant.request_kwargs()
     )
-    text = "".join(block.text for block in response.content if block.type == "text")
+    text = response_text(response)
     return Row(variant.label, response.stop_reason, response.usage.output_tokens, text)
 
 

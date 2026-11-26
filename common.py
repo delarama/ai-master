@@ -42,3 +42,8 @@ def friendly_api_errors() -> Iterator[None]:
         raise SystemExit("Rate limited by the API: wait a moment and try again.") from exc
     except anthropic.APIConnectionError as exc:
         raise SystemExit("Could not reach the Anthropic API: check your connection.") from exc
+
+
+def response_text(message: anthropic.types.Message) -> str:
+    """Join the text blocks of a response, skipping other block types (thinking, tool use)."""
+    return "".join(block.text for block in message.content if block.type == "text")
