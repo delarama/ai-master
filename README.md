@@ -23,7 +23,7 @@ Shared setup lives in [`common.py`](common.py). CI runs lint and tests on every 
 ## Progress
 | Day | Topic | Script | Notes |
 |-----|-------|--------|-------|
-| 01 | System prompts & first message | [`day1.py`](day1.py) | [notes](notes/day01.md) |
-| 02 | Streaming responses | [`day2_streaming.py`](day2_streaming.py) | [notes](notes/day02.md) |
+| 01 | System prompts & first message | [`day01_first_message.py`](day01_first_message.py) | [notes](notes/day01.md) |
+| 02 | Streaming responses | [`day02_streaming.py`](day02_streaming.py) | [notes](notes/day02.md) |
 | 03 | Multi-turn conversations | [`day03_multiturn.py`](day03_multiturn.py) | [notes](notes/day03.md) |
 | 04 | Temperature, max_tokens & stop sequences | [`day04_sampling_params.py`](day04_sampling_params.py) | [notes](notes/day04.md) |
