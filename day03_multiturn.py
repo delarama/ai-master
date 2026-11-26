@@ -31,6 +31,10 @@ class Conversation:
     max_turns: int = 10  # one turn = one user message + one assistant reply
     messages: list[Message] = field(default_factory=list)
 
+    def __post_init__(self) -> None:
+        if self.max_turns < 1:
+            raise ValueError("max_turns must be at least 1, or the pending message is dropped.")
+
     def add_user(self, text: str) -> None:
         if self.messages and self.messages[-1]["role"] == "user":
             raise ValueError("Two user messages in a row; add the assistant reply first.")
@@ -46,10 +50,8 @@ class Conversation:
         keep = self.max_turns * 2
         if self.messages and self.messages[-1]["role"] == "user":
             keep -= 1  # the pending user message counts toward the newest turn
-        recent = self.messages[-keep:] if keep > 0 else []
-        while recent and recent[0]["role"] != "user":
-            recent = recent[1:]
-        return recent
+        # Alternation is enforced on insert, so an even/odd slice always starts on a user turn.
+        return self.messages[-keep:]
 
 
 def ask(client: anthropic.Anthropic, convo: Conversation, text: str) -> str:
