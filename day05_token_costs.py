@@ -14,6 +14,7 @@ import anthropic
 
 from common import (
     BUYER_OPENING,
+    DEFAULT_MAX_TOKENS,
     DEFAULT_MODEL,
     SELLER_SYSTEM_PROMPT,
     friendly_api_errors,
@@ -84,7 +85,7 @@ if __name__ == "__main__":
 
         response = client.messages.create(
             model=DEFAULT_MODEL,
-            max_tokens=500,
+            max_tokens=DEFAULT_MAX_TOKENS,
             system=SELLER_SYSTEM_PROMPT,
             messages=[{"role": "user", "content": BUYER_OPENING}],
         )

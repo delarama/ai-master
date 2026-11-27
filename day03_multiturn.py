@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 import anthropic
 
 from common import (
+    DEFAULT_MAX_TOKENS,
     DEFAULT_MODEL,
     SELLER_SYSTEM_PROMPT,
     friendly_api_errors,
@@ -64,7 +65,7 @@ def ask(client: anthropic.Anthropic, convo: Conversation, text: str) -> str:
     convo.add_user(text)
     response = client.messages.create(
         model=DEFAULT_MODEL,
-        max_tokens=500,
+        max_tokens=DEFAULT_MAX_TOKENS,
         system=convo.system,
         messages=convo.window(),
     )

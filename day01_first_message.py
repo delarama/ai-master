@@ -8,6 +8,7 @@ import anthropic
 
 from common import (
     BUYER_OPENING,
+    DEFAULT_MAX_TOKENS,
     DEFAULT_MODEL,
     SELLER_SYSTEM_PROMPT,
     friendly_api_errors,
@@ -22,7 +23,7 @@ def negotiate(
     """Send a single buyer message to the seller persona and return the full Message."""
     return client.messages.create(
         model=DEFAULT_MODEL,
-        max_tokens=500,
+        max_tokens=DEFAULT_MAX_TOKENS,
         system=SELLER_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     )

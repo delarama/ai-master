@@ -10,6 +10,7 @@ import anthropic
 
 from common import (
     BUYER_OPENING,
+    DEFAULT_MAX_TOKENS,
     DEFAULT_MODEL,
     SELLER_SYSTEM_PROMPT,
     friendly_api_errors,
@@ -35,7 +36,7 @@ def stream_reply(client: anthropic.Anthropic, user_message: str = BUYER_OPENING)
 
     with client.messages.stream(
         model=DEFAULT_MODEL,
-        max_tokens=500,
+        max_tokens=DEFAULT_MAX_TOKENS,
         system=SELLER_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     ) as stream:
