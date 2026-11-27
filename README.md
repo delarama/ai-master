@@ -27,3 +27,4 @@ Shared setup lives in [`common.py`](common.py). CI runs lint and tests on every 
 | 02 | Streaming responses | [`day02_streaming.py`](day02_streaming.py) | [notes](notes/day02.md) |
 | 03 | Multi-turn conversations | [`day03_multiturn.py`](day03_multiturn.py) | [notes](notes/day03.md) |
 | 04 | Temperature, max_tokens & stop sequences | [`day04_sampling_params.py`](day04_sampling_params.py) | [notes](notes/day04.md) |
+| 05 | Token counting & cost estimation | [`day05_token_costs.py`](day05_token_costs.py) | [notes](notes/day05.md) |
