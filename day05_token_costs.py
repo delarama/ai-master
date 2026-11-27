@@ -14,6 +14,7 @@ import anthropic
 
 from common import (
     BUYER_OPENING,
+    DEFAULT_MAX_TOKENS,
     DEFAULT_MODEL,
     SELLER_SYSTEM_PROMPT,
     friendly_api_errors,
@@ -74,6 +75,15 @@ def estimate_table(input_tokens: int, assumed_output_tokens: int) -> str:
     return "\n".join(lines)
 
 
+def describe_actual_cost(model: str, usage: anthropic.types.Usage) -> str:
+    """One line pricing the real token usage reported by a response."""
+    actual = cost_usd(model, usage.input_tokens, usage.output_tokens)
+    return (
+        f"Actual on {model}: {usage.input_tokens} in / "
+        f"{usage.output_tokens} out = {format_usd(actual)}"
+    )
+
+
 if __name__ == "__main__":
     with friendly_api_errors():
         client = make_client()
@@ -84,13 +94,8 @@ if __name__ == "__main__":
 
         response = client.messages.create(
             model=DEFAULT_MODEL,
-            max_tokens=500,
+            max_tokens=DEFAULT_MAX_TOKENS,
             system=SELLER_SYSTEM_PROMPT,
             messages=[{"role": "user", "content": BUYER_OPENING}],
         )
-        usage = response.usage
-        actual = cost_usd(DEFAULT_MODEL, usage.input_tokens, usage.output_tokens)
-        print(
-            f"\nActual on {DEFAULT_MODEL}: {usage.input_tokens} in / "
-            f"{usage.output_tokens} out = {format_usd(actual)}"
-        )
+        print("\n" + describe_actual_cost(DEFAULT_MODEL, response.usage))

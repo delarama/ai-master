@@ -1,19 +1,24 @@
-"""Day 04 — Temperature, max_tokens & stop sequences compared.
+"""Day 04 — Effort, max_tokens & stop sequences compared.
 
 Sends the same prompt with different generation settings and prints a table
 showing how each one changes the output, the stop reason and the token count.
 
-- temperature: 0.0 is close to deterministic; 1.0 gives more varied wording.
-- max_tokens: a hard cap. When hit, stop_reason is "max_tokens" and the text is cut off.
+- effort (`output_config={"effort": ...}`): how much the model thinks before
+  answering. Low is faster and cheaper; high is more thorough. Current Claude
+  models removed `temperature`/`top_p`, so effort is the main quality/cost dial.
+- max_tokens: a hard cap on output, thinking included. When hit, stop_reason is
+  "max_tokens" and the text is cut off (or empty if thinking used it all).
 - stop_sequences: generation halts when the model emits one; stop_reason is "stop_sequence".
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Literal
 
 import anthropic
 
 from common import DEFAULT_MODEL, friendly_api_errors, make_client, response_text
+
+Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 PROMPT = (
     "Write a three-line sales pitch for a used 2018 Honda Civic. "
@@ -26,26 +31,24 @@ class Variant:
     """One set of generation settings to try."""
 
     label: str
-    temperature: float = 1.0
-    max_tokens: int = 300
+    effort: Effort | None = None  # None = the model's default
+    max_tokens: int = 2000
     stop_sequences: list[str] = field(default_factory=list)
 
     def request_kwargs(self) -> dict[str, Any]:
-        kwargs: dict[str, Any] = {
-            "model": DEFAULT_MODEL,
-            "temperature": self.temperature,
-            "max_tokens": self.max_tokens,
-        }
+        kwargs: dict[str, Any] = {"model": DEFAULT_MODEL, "max_tokens": self.max_tokens}
+        if self.effort:
+            kwargs["output_config"] = {"effort": self.effort}
         if self.stop_sequences:
             kwargs["stop_sequences"] = self.stop_sequences
         return kwargs
 
 
 VARIANTS = [
-    Variant("temperature 0.0", temperature=0.0),
-    Variant("temperature 1.0", temperature=1.0),
-    Variant("max_tokens 20", temperature=0.0, max_tokens=20),
-    Variant('stop at "3."', temperature=0.0, stop_sequences=["3."]),
+    Variant("effort low", effort="low"),
+    Variant("effort high", effort="high"),
+    Variant("max_tokens 40", effort="low", max_tokens=40),
+    Variant('stop at "3."', effort="low", stop_sequences=["3."]),
 ]
 
 

@@ -13,9 +13,20 @@ def _response(text, stop_reason="end_turn", output_tokens=12):
     )
 
 
-def test_request_kwargs_omit_stop_sequences_when_unset():
-    kwargs = Variant("plain", temperature=0.2, max_tokens=50).request_kwargs()
-    assert kwargs == {"model": DEFAULT_MODEL, "temperature": 0.2, "max_tokens": 50}
+def test_request_kwargs_omit_optional_settings_when_unset():
+    kwargs = Variant("plain", max_tokens=50).request_kwargs()
+    assert kwargs == {"model": DEFAULT_MODEL, "max_tokens": 50}
+
+
+def test_request_kwargs_put_effort_in_output_config():
+    kwargs = Variant("low", effort="low").request_kwargs()
+    assert kwargs["output_config"] == {"effort": "low"}
+
+
+def test_request_kwargs_never_send_removed_sampling_params():
+    for variant in VARIANTS:
+        kwargs = variant.request_kwargs()
+        assert not {"temperature", "top_p", "top_k"} & kwargs.keys()
 
 
 def test_request_kwargs_include_stop_sequences_when_set():
@@ -24,7 +35,7 @@ def test_request_kwargs_include_stop_sequences_when_set():
 
 
 def test_variants_cover_each_parameter():
-    assert {v.temperature for v in VARIANTS} >= {0.0, 1.0}
+    assert {v.effort for v in VARIANTS} >= {"low", "high"}
     assert any(v.max_tokens < 50 for v in VARIANTS)
     assert any(v.stop_sequences for v in VARIANTS)
 
@@ -32,14 +43,14 @@ def test_variants_cover_each_parameter():
 def test_run_variant_passes_settings_and_summarises():
     client = MagicMock()
     client.messages.create.return_value = _response("1. Reliable", "stop_sequence", 5)
-    variant = Variant("stop", temperature=0.0, stop_sequences=["2."])
+    variant = Variant("stop", effort="low", stop_sequences=["2."])
 
     row = run_variant(client, variant, prompt="pitch it")
 
     kwargs = client.messages.create.call_args.kwargs
     assert kwargs["messages"] == [{"role": "user", "content": "pitch it"}]
     assert kwargs["stop_sequences"] == ["2."]
-    assert kwargs["temperature"] == 0.0
+    assert kwargs["output_config"] == {"effort": "low"}
     assert row == Row("stop", "stop_sequence", 5, "1. Reliable")
 
 
@@ -56,3 +67,14 @@ def test_format_table_has_one_line_per_row():
     assert len(lines) == 4
     assert "hello world" in lines[2]
     assert "max_tokens" in lines[3]
+
+
+def test_variant_kwargs_match_real_sdk_signature():
+    # Mocks accept any kwarg; check against the installed SDK so a removed parameter can't slip by.
+    import inspect
+
+    from anthropic.resources.messages import Messages
+
+    accepted = set(inspect.signature(Messages.create).parameters)
+    for variant in VARIANTS:
+        assert set(variant.request_kwargs()) <= accepted, variant.label

@@ -7,6 +7,7 @@ from day05_token_costs import (
     PRICES,
     cost_usd,
     count_input_tokens,
+    describe_actual_cost,
     estimate_table,
     format_usd,
 )
@@ -52,3 +53,10 @@ def test_estimate_table_lists_every_priced_model():
     for model in PRICES:
         assert model in table
     assert len(table.splitlines()) == len(PRICES) + 1
+
+
+def test_describe_actual_cost_prices_reported_usage():
+    usage = SimpleNamespace(input_tokens=1_000, output_tokens=500)
+    line = describe_actual_cost("claude-sonnet-5-5", usage)
+    # 1,000 x $2/M + 500 x $10/M = $0.007
+    assert line == "Actual on claude-sonnet-5-5: 1000 in / 500 out = $0.007000"

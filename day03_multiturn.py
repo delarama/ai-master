@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 import anthropic
 
 from common import (
+    DEFAULT_MAX_TOKENS,
     DEFAULT_MODEL,
     SELLER_SYSTEM_PROMPT,
     friendly_api_errors,
@@ -45,6 +46,11 @@ class Conversation:
             raise ValueError("An assistant reply must follow a user message.")
         self.messages.append({"role": "assistant", "content": text})
 
+    def drop_pending_user(self) -> None:
+        """Remove an unanswered user message so the history stays valid to resend."""
+        if self.messages and self.messages[-1]["role"] == "user":
+            self.messages.pop()
+
     def window(self) -> list[Message]:
         """The messages to send: the most recent `max_turns` turns, always starting with a user."""
         keep = self.max_turns * 2
@@ -59,11 +65,16 @@ def ask(client: anthropic.Anthropic, convo: Conversation, text: str) -> str:
     convo.add_user(text)
     response = client.messages.create(
         model=DEFAULT_MODEL,
-        max_tokens=500,
+        max_tokens=DEFAULT_MAX_TOKENS,
         system=convo.system,
         messages=convo.window(),
     )
     reply = response_text(response)
+    if not reply:
+        # A refusal, or max_tokens hit before any text, gives no reply to store. An empty
+        # assistant message would make every later request invalid, so roll the turn back.
+        convo.drop_pending_user()
+        return f"[no reply: stop_reason={response.stop_reason}; try rephrasing]"
     convo.add_assistant(reply)
     return reply
 

@@ -9,6 +9,10 @@ from dotenv import load_dotenv
 
 DEFAULT_MODEL = "claude-sonnet-5-5"
 
+# Thinking tokens count toward max_tokens on current models, so leave room for
+# thinking plus the reply; too low a cap returns cut-off or empty text.
+DEFAULT_MAX_TOKENS = 4000
+
 # Negotiation persona used on Days 01-03.
 SELLER_SYSTEM_PROMPT = (
     "You are selling a 2018 Honda Civic for $18,000. Your lowest price is "
