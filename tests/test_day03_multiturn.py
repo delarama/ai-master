@@ -91,3 +91,19 @@ def test_chat_loop_stops_on_eof(monkeypatch):
     client = MagicMock()
     chat_loop(client, Conversation(system="s"))
     client.messages.create.assert_not_called()
+
+
+def test_ask_rolls_back_turn_when_reply_is_empty():
+    client = MagicMock()
+    client.messages.create.side_effect = [
+        SimpleNamespace(content=[], stop_reason="refusal"),
+        _reply("Sure, $17,000."),
+    ]
+    convo = Conversation(system="s")
+
+    note = ask(client, convo, "something declined")
+    assert "stop_reason=refusal" in note
+    assert convo.messages == []  # nothing invalid left behind
+
+    assert ask(client, convo, "$16,000?") == "Sure, $17,000."
+    assert [m["role"] for m in convo.messages] == ["user", "assistant"]
