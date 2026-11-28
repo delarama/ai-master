@@ -28,3 +28,4 @@ Shared setup lives in [`common.py`](common.py). CI runs lint and tests on every 
 | 03 | Multi-turn conversations | [`day03_multiturn.py`](day03_multiturn.py) | [notes](notes/day03.md) |
 | 04 | Effort, max_tokens & stop sequences | [`day04_sampling_params.py`](day04_sampling_params.py) | [notes](notes/day04.md) |
 | 05 | Token counting & cost estimation | [`day05_token_costs.py`](day05_token_costs.py) | [notes](notes/day05.md) |
+| 06 | Structured JSON output with validation | [`day06_structured_output.py`](day06_structured_output.py) | [notes](notes/day06.md) |
